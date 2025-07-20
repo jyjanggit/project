@@ -1,21 +1,11 @@
 import UIKit
 
-//공통
-let commonFontBold: UIFont = .systemFont(ofSize: 25, weight: .bold)
-let commonFontRegular: UIFont = .systemFont(ofSize: 25)
-let commonFontColor = UIColor(hex: "#1B2631")
-func applyCommonButtonStyle(_ button: UIButton) {
-  button.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .semibold)
-  button.setTitleColor(.white, for: .normal)
-}
-
-
 final class GoalViewController: UIViewController {
   
   //스크롤뷰
   lazy var scView: UIScrollView = {
     let scv = UIScrollView()
-    scv.backgroundColor = UIColor(hex: "#bdd3fc")
+    scv.backgroundColor = UIColor(hex: "#F7F8FA")
     return scv
   }()
   
@@ -25,6 +15,10 @@ final class GoalViewController: UIViewController {
     v.layer.cornerRadius = 10
     v.clipsToBounds = true
     v.backgroundColor = .white
+    v.layer.shadowColor = UIColor(hex: "#1b2631").cgColor
+    v.layer.shadowOpacity = 0.2
+    v.layer.shadowRadius = 8
+    v.layer.shadowOffset = CGSize(width: 0, height: 4)
     return v
   }()
   
@@ -33,6 +27,7 @@ final class GoalViewController: UIViewController {
     let l = UILabel()
     l.font = commonFontBold
     l.textColor = commonFontColor
+    l.text = "근육량"
     return l
   }()
   
@@ -41,25 +36,27 @@ final class GoalViewController: UIViewController {
     let l = UILabel()
     l.font = commonFontBold
     l.textColor = commonFontColor
+    l.text = "25"
     return l
   }()
   
   //공통단위라벨
-  static func makeUnitLabel() -> UILabel {
+  func makeUnitLabel() -> UILabel {
     let l = UILabel()
     l.font = commonFontBold
     l.textColor = commonFontColor
+    l.text = "kg"
     return l
   }
   
   //단위라벨
-  let unitLabel1 = makeUnitLabel()
-  let unitLabel2 = makeUnitLabel()
+  lazy var unitLabel1 = makeUnitLabel()
+  lazy var unitLabel2 = makeUnitLabel()
   
   //증가,감량
   lazy var weightChangeLabel: UILabel = {
     let l = UILabel()
-    l.text = "증가까지"
+    l.text = "증가"
     l.font = commonFontBold
     l.textColor = commonFontColor
     return l
@@ -79,13 +76,14 @@ final class GoalViewController: UIViewController {
     let l = UILabel()
     l.font = commonFontBold
     l.textColor = commonFontColor
+    l.text = "2"
     return l
   }()
   
   //프로그래스바
   lazy var progressView: UIProgressView = {
     let p = UIProgressView(progressViewStyle: .default)
-    p.progress = 0.7 //임시
+    p.progress = 0.5 //임시
     p.trackTintColor = .lightGray
     p.progressTintColor = .systemBlue
     return p
@@ -94,7 +92,7 @@ final class GoalViewController: UIViewController {
   //프로그래스바 %
   lazy var progressGoalLabel: UILabel = {
     let l = UILabel()
-    l.text = "100%"
+    l.text = "50%"
     l.font = .systemFont(ofSize: 18)
     l.textColor = UIColor(hex: "#181818")
     return l
@@ -103,8 +101,10 @@ final class GoalViewController: UIViewController {
   //수정버튼
   lazy var updateButton: UIButton = {
     let b = UIButton(type: .system)
-    b.setTitle("수정", for: .normal)
-    b.backgroundColor = .systemBlue
+    b.setTitle("현재 상태 수정", for: .normal)
+    b.backgroundColor = UIColor(hex: "#87BFFF")
+    b.layer.cornerRadius = 10
+    b.clipsToBounds = true
     applyCommonButtonStyle(b)
     return b
   }()
@@ -113,25 +113,37 @@ final class GoalViewController: UIViewController {
   lazy var deleteButton: UIButton = {
     let b = UIButton(type: .system)
     b.setTitle("삭제", for: .normal)
-    b.backgroundColor = .systemRed
+    b.backgroundColor = UIColor(hex: "#FF8B8B")
+    b.layer.cornerRadius = 10
+    b.clipsToBounds = true
     applyCommonButtonStyle(b)
     return b
   }()
   
   //스택뷰
+  let goalsStackView: UIStackView = {
+    let stack = UIStackView()
+    stack.axis = .vertical
+    stack.alignment = .fill
+    stack.spacing = 8
+    return stack
+  }()
+  
   lazy var goalInfoStackView: UIStackView = {
-    let stack = UIStackView(arrangedSubviews: [goalNameLabel, goalLabel, unitLabel1])
+    let stack = UIStackView(arrangedSubviews: [goalNameLabel, goalLabel, unitLabel1, UIView()])
     stack.axis = .horizontal
     stack.spacing = 8
     stack.alignment = .center
+    stack.distribution = .fill
     return stack
   }()
   
   lazy var progressInfoStackView: UIStackView = {
-    let stack = UIStackView(arrangedSubviews: [weightChangeLabel, untilLabel, goalLeftLabel, unitLabel2])
+    let stack = UIStackView(arrangedSubviews: [weightChangeLabel, untilLabel, goalLeftLabel, unitLabel2, UIView()])
     stack.axis = .horizontal
     stack.spacing = 8
     stack.alignment = .center
+    stack.distribution = .fill
     return stack
   }()
   
@@ -148,6 +160,7 @@ final class GoalViewController: UIViewController {
     stack.axis = .horizontal
     stack.spacing = 12
     stack.alignment = .center
+    stack.distribution = .fillEqually
     return stack
   }()
   
@@ -164,23 +177,40 @@ final class GoalViewController: UIViewController {
     stack.distribution = .equalSpacing
     return stack
   }()
-  
-  
-  
-  
-  
+
   override func viewDidLoad() {
     super.viewDidLoad()
-    
     setupLayout()
   }
   
   private func setupLayout() {
     
+    view.addSubview(scView)
+    scView.addSubview(goalsStackView)
+    goalsStackView.addArrangedSubview(goalView)
+    goalView.addSubview(goalSummaryStackView)
     
+    scView.translatesAutoresizingMaskIntoConstraints = false
+    goalsStackView.translatesAutoresizingMaskIntoConstraints = false
+    goalView.translatesAutoresizingMaskIntoConstraints = false
+    goalSummaryStackView.translatesAutoresizingMaskIntoConstraints = false
     
-    
+    NSLayoutConstraint.activate([
+      scView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+      scView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+      scView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+      scView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+
+      goalsStackView.topAnchor.constraint(equalTo: scView.contentLayoutGuide.topAnchor, constant: 16),
+      goalsStackView.leadingAnchor.constraint(equalTo: scView.contentLayoutGuide.leadingAnchor, constant: 16),
+      goalsStackView.trailingAnchor.constraint(equalTo: scView.contentLayoutGuide.trailingAnchor, constant: -16),
+      goalsStackView.bottomAnchor.constraint(equalTo: scView.contentLayoutGuide.bottomAnchor, constant: -16),
+      goalsStackView.widthAnchor.constraint(equalTo: scView.frameLayoutGuide.widthAnchor, constant: -32),
+
+      goalSummaryStackView.topAnchor.constraint(equalTo: goalView.topAnchor, constant: 16),
+      goalSummaryStackView.leadingAnchor.constraint(equalTo: goalView.leadingAnchor, constant: 16),
+      goalSummaryStackView.trailingAnchor.constraint(equalTo: goalView.trailingAnchor, constant: -16),
+      goalSummaryStackView.bottomAnchor.constraint(equalTo: goalView.bottomAnchor, constant: -16)
+    ])
   }
-  
-  
 }

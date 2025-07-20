@@ -1,10 +1,3 @@
-//
-//  Untitled.swift
-//  Project
-//
-//  Created by JY Jang on 7/19/25.
-//
-
 import UIKit
 
 extension UIColor {
