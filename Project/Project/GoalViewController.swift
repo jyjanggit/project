@@ -177,10 +177,29 @@ final class GoalViewController: UIViewController {
     stack.distribution = .equalSpacing
     return stack
   }()
-
+  
   override func viewDidLoad() {
     super.viewDidLoad()
     setupLayout()
+    //네비게이션바
+    navi()
+  }
+  
+  private func navi() {
+    self.title = "현재 목표"
+    self.navigationItem.rightBarButtonItem = UIBarButtonItem(
+      barButtonSystemItem: .add,
+      target: self,
+      action: #selector(addTapped)
+    )
+    
+  }
+  
+  @objc private func addTapped() {
+    let vc = AddGoalViewController()
+    let nav = UINavigationController(rootViewController: vc)
+    nav.modalPresentationStyle = .formSheet
+    present(nav, animated: true)
   }
   
   private func setupLayout() {
@@ -200,13 +219,13 @@ final class GoalViewController: UIViewController {
       scView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
       scView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
       scView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-
+      
       goalsStackView.topAnchor.constraint(equalTo: scView.contentLayoutGuide.topAnchor, constant: 16),
       goalsStackView.leadingAnchor.constraint(equalTo: scView.contentLayoutGuide.leadingAnchor, constant: 16),
       goalsStackView.trailingAnchor.constraint(equalTo: scView.contentLayoutGuide.trailingAnchor, constant: -16),
       goalsStackView.bottomAnchor.constraint(equalTo: scView.contentLayoutGuide.bottomAnchor, constant: -16),
       goalsStackView.widthAnchor.constraint(equalTo: scView.frameLayoutGuide.widthAnchor, constant: -32),
-
+      
       goalSummaryStackView.topAnchor.constraint(equalTo: goalView.topAnchor, constant: 16),
       goalSummaryStackView.leadingAnchor.constraint(equalTo: goalView.leadingAnchor, constant: 16),
       goalSummaryStackView.trailingAnchor.constraint(equalTo: goalView.trailingAnchor, constant: -16),

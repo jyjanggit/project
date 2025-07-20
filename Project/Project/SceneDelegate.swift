@@ -16,7 +16,22 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     guard let windowScene = (scene as? UIWindowScene) else { return }
     
     let window = UIWindow(windowScene: windowScene)
-    window.rootViewController = GoalViewController()
+    
+    let appearance = UINavigationBarAppearance()
+    appearance.configureWithOpaqueBackground()
+    appearance.backgroundColor = .white
+    appearance.titleTextAttributes = [
+        .font: commonFontRegular,
+        .foregroundColor: commonFontColor
+    ]
+    appearance.largeTitleTextAttributes = [
+        .font: commonFontRegular,
+        .foregroundColor: commonFontColor
+    ]
+    UINavigationBar.appearance().standardAppearance = appearance
+    UINavigationBar.appearance().scrollEdgeAppearance = appearance
+    
+    window.rootViewController = UINavigationController(rootViewController: GoalViewController())
     self.window = window
     window.makeKeyAndVisible()
   }
