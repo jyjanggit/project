@@ -2,90 +2,91 @@ import UIKit
 
 final class AddGoalViewController: UIViewController {
   
-  //뷰
+  
+  weak var delegate: addGoalViewControllerDelegate?
+  
+  enum ChangeType: Int {
+    case decrease = 0 //감소 선택
+    case increase = 1 //증가 선택
+  }
+  
+  
+  
+  // 뷰
   lazy var modalMainView: UIView = {
-    let v = UIView()
-    return v
+    let view = UIView()
+    return view
   }()
   
-  //목표입력받기
+  // 목표입력받기
   lazy var goalTextField: UITextField = {
-    let tf = UITextField()
-    applyCommonTextFieldStyle(tf)
-    tf.placeholder = "목표를 입력하세요"
-    tf.keyboardType = .default
-    return tf
+    let textField = UITextField()
+    applyCommonTextFieldStyle(textField)
+    textField.placeholder = "목표를 입력하세요"
+    textField.keyboardType = .default
+    return textField
   }()
   
-  //현재
+  // 현재
   lazy var currentTextField: UITextField = {
-    let tf = UITextField()
-    applyCommonTextFieldStyle(tf)
-    tf.keyboardType = .numberPad
-    return tf
+    let textField = UITextField()
+    applyCommonTextFieldStyle(textField)
+    textField.keyboardType = .numberPad
+    return textField
   }()
   
-  //~에서
+  // ~에서
   lazy var formLabel: UILabel = {
-    let l = UILabel()
-    l.font = commonFontRegular
-    l.textColor = commonFontColor
-    l.text = "에서"
-    return l
+    let label = UILabel()
+    label.font = commonFontRegular
+    label.textColor = commonFontColor
+    label.text = "에서"
+    return label
   }()
   
-  //목적
+  // 목적
   lazy var goalNumberTextField: UITextField = {
-    let tf = UITextField()
-    applyCommonTextFieldStyle(tf)
-    tf.keyboardType = .numberPad
-    return tf
+    let textField = UITextField()
+    applyCommonTextFieldStyle(textField)
+    textField.keyboardType = .numberPad
+    return textField
   }()
   
-  //~까지
+  // ~까지
   lazy var untilLabel: UILabel = {
-    let l = UILabel()
-    l.font = commonFontRegular
-    l.textColor = commonFontColor
-    l.text = "까지"
-    return l
+    let label = UILabel()
+    label.font = commonFontRegular
+    label.textColor = commonFontColor
+    label.text = "까지"
+    return label
   }()
   
-  //단위
+  // 단위
   lazy var unitTextField: UITextField = {
-    let tf = UITextField()
-    applyCommonTextFieldStyle(tf)
-    tf.placeholder = "단위"
-    tf.keyboardType = .default
-    return tf
+    let textField = UITextField()
+    applyCommonTextFieldStyle(textField)
+    textField.placeholder = "단위"
+    textField.keyboardType = .default
+    return textField
   }()
   
-  //감량 증가 택1
+  // 감량 증가 택1
   lazy var changeType: UISegmentedControl = {
-    let sc = UISegmentedControl(items: ["감소", "증가"])
-    sc.selectedSegmentIndex = 0
+    let segmentControl = UISegmentedControl(items: ["감소", "증가"])
+    segmentControl.selectedSegmentIndex = 0
     
     let selectedFont = UIFont.boldSystemFont(ofSize: 20)
     let selectedAttributes: [NSAttributedString.Key: Any] = [
-        .font: selectedFont,
-        .foregroundColor: UIColor(hex: "#87BFFF")
+      .font: selectedFont,
+      .foregroundColor: UIColor(hex: "#87BFFF")
     ]
-    sc.setTitleTextAttributes(selectedAttributes, for: .selected)
-    sc.addTarget(self, action: #selector(segmentChanged), for: .valueChanged)
-    return sc
+    segmentControl.setTitleTextAttributes(selectedAttributes, for: .selected)
+    return segmentControl
   }()
   
   
   
-  @objc func segmentChanged(sender: UISegmentedControl) {
-    if sender.selectedSegmentIndex == 0 {
-      
-    } else {
-      
-    }
-  }
-  
-  //스택뷰
+  // 스택뷰
   lazy var fromToStackView: UIStackView = {
     let stack = UIStackView(arrangedSubviews: [
       currentTextField,
@@ -111,7 +112,7 @@ final class AddGoalViewController: UIViewController {
     stack.distribution = .fillEqually
     return stack
   }()
-
+  
   lazy var goalInputStackView: UIStackView = {
     let stack = UIStackView(arrangedSubviews: [
       goalTextField,
@@ -162,9 +163,61 @@ final class AddGoalViewController: UIViewController {
   @objc private func dismissModal() {
     self.dismiss(animated: true)
   }
+  
   @objc private func confirmAction() {
+    
+    // 유효성 검사
+    guard let goal = goalTextField.text, !goal.isEmpty,
+          let unit = unitTextField.text, !unit.isEmpty,
+          let targetText = goalNumberTextField.text, let target = Double(targetText),
+          let currentText = currentTextField.text, let currentValue = Double(currentText) else {
+      showAlert(message: "모든 항목을 입력해주세요.")
+      return
+    }
+    
+    // 첫 설정 0
+    var untilGoal: Double = 0
+    
+    var selectedChangeType: ChangeType {
+      return ChangeType(rawValue: changeType.selectedSegmentIndex) ?? .decrease
+    }
+    
+    
+    //값 검사
+    switch selectedChangeType {
+    case .decrease:
+      if target >= currentValue {
+        showAlert(message: "목표가 현재값보다 크거나 같습니다. 값을 확인해주세요.")
+        return
+      }
+      untilGoal = currentValue - target
+    case .increase:
+      if target <= currentValue {
+        showAlert(message: "목표가 현재값보다 작거나 같습니다. 값을 확인해주세요.")
+        return
+      }
+      untilGoal = target - currentValue
+    }
+    
+    //처음엔 프로그래스바 진행도 0,퍼센트도 0
+    delegate?.didAddGoal(goal: goal,
+                         target: target,
+                         unit: unit,
+                         type: selectedChangeType.rawValue,
+                         initPercent: 0,
+                         initProgess: 0,
+                         untilGoal: untilGoal)
+    
     self.dismiss(animated: true)
   }
+  
+  //알럿 창
+  private func showAlert(message: String) {
+    let alert = UIAlertController(title: "알림", message: message, preferredStyle: .alert)
+    alert.addAction(UIAlertAction(title: "확인", style: .default))
+    self.present(alert, animated: true)
+  }
+  
   
   private func setupLayout() {
     
@@ -179,7 +232,7 @@ final class AddGoalViewController: UIViewController {
       goalInputStackView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
       goalInputStackView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
       
-
+      
       
       
     ])
