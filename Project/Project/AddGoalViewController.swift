@@ -3,7 +3,7 @@ import UIKit
 final class AddGoalViewController: UIViewController {
   
   
-  weak var delegate: addGoalViewControllerDelegate?
+  weak var delegate: AddGoalViewControllerDelegate?
   
   enum ChangeType: Int {
     case decrease = 0 //감소 선택
@@ -211,7 +211,7 @@ final class AddGoalViewController: UIViewController {
                          unit: unit,
                          type: selectedChangeType.rawValue,
                          initPercent: 0,
-                         initProgess: 0,
+                         initProgress: 0,
                          untilGoal: untilGoal)
     
     self.dismiss(animated: true)
