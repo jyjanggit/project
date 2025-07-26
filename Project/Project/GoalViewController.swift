@@ -1,6 +1,6 @@
 import UIKit
 
-final class GoalViewController: UIViewController, addGoalViewControllerDelegate {
+final class GoalViewController: UIViewController, AddGoalViewControllerDelegate {
   
   // 스크롤뷰
   let scView: UIScrollView = {
@@ -69,8 +69,9 @@ final class GoalViewController: UIViewController, addGoalViewControllerDelegate 
   }
   
   
+  
   // 델리게이트
-  func didAddGoal(goal: String, target: Double, unit: String, type: Int, initPercent: Double, initProgess: Double, untilGoal: Double) {
+  func didAddGoal(goal: String, target: Double, unit: String, type: Int, initPercent: Double, initProgress: Double, untilGoal: Double) {
     let newGoalView = createGoalView(
       goalName: goal,
       targetValue: target,
@@ -78,7 +79,7 @@ final class GoalViewController: UIViewController, addGoalViewControllerDelegate 
       type: type,
       untilGoal: untilGoal,
       initPercent: initPercent,
-      initProgress: initProgess
+      initProgress: initProgress
     )
     goalsStackView.addArrangedSubview(newGoalView)
   }
@@ -108,7 +109,8 @@ final class GoalViewController: UIViewController, addGoalViewControllerDelegate 
       label.font = commonFontBold
       label.textColor = commonFontColor
       label.text = unit
-      label.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
+      label.setContentHuggingPriority(.required, for: .horizontal)
+      label.setContentCompressionResistancePriority(.required, for: .horizontal)
       return label
     }
     
@@ -118,6 +120,7 @@ final class GoalViewController: UIViewController, addGoalViewControllerDelegate 
       label.font = commonFontBold
       label.textColor = commonFontColor
       label.text = goalName
+      label.setContentHuggingPriority(.defaultLow, for: .horizontal)
       label.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
       return label
     }()
@@ -128,7 +131,8 @@ final class GoalViewController: UIViewController, addGoalViewControllerDelegate 
       label.font = commonFontBold
       label.textColor = commonFontColor
       label.text = String(format: "%.2f", targetValue)
-      label.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
+      label.setContentHuggingPriority(.required, for: .horizontal)
+      label.setContentCompressionResistancePriority(.required, for: .horizontal)
       return label
     }()
     
@@ -203,17 +207,12 @@ final class GoalViewController: UIViewController, addGoalViewControllerDelegate 
       return button
     }()
     
-    let spacerView: UIView = {
-      let spacer = UIView()
-      spacer.setContentHuggingPriority(.defaultLow, for: .horizontal)
-      spacer.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
-      return spacer
-    }()
+
 
     
     // 목표 정보 스택뷰
     let goalInfoStackView: UIStackView = {
-      let stack = UIStackView(arrangedSubviews: [goalNameLabel, goalLabel, unitLabel1, spacerView])
+      let stack = UIStackView(arrangedSubviews: [goalNameLabel, goalLabel, unitLabel1, UIView()])
       stack.axis = .horizontal
       stack.spacing = 8
       stack.alignment = .center
@@ -223,7 +222,7 @@ final class GoalViewController: UIViewController, addGoalViewControllerDelegate 
     
     // 진행 정보 스택뷰
     let progressInfoStackView: UIStackView = {
-      let stack = UIStackView(arrangedSubviews: [weightChangeLabel, untilLabel, goalLeftLabel, unitLabel2, spacerView])
+      let stack = UIStackView(arrangedSubviews: [weightChangeLabel, untilLabel, goalLeftLabel, unitLabel2, UIView()])
       stack.axis = .horizontal
       stack.spacing = 8
       stack.alignment = .center
@@ -268,7 +267,8 @@ final class GoalViewController: UIViewController, addGoalViewControllerDelegate 
     goalView.addSubview(mainStackView)
     mainStackView.addSubview(goalInfoStackView)
     mainStackView.translatesAutoresizingMaskIntoConstraints = false
-    goalInfoStackView.translatesAutoresizingMaskIntoConstraints = false
+
+
     
     NSLayoutConstraint.activate([
       mainStackView.topAnchor.constraint(equalTo: goalView.topAnchor, constant: 16),
