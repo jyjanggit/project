@@ -265,7 +265,6 @@ final class GoalViewController: UIViewController, AddGoalViewControllerDelegate 
     }()
     
     goalView.addSubview(mainStackView)
-    mainStackView.addSubview(goalInfoStackView)
     mainStackView.translatesAutoresizingMaskIntoConstraints = false
 
 
@@ -274,11 +273,7 @@ final class GoalViewController: UIViewController, AddGoalViewControllerDelegate 
       mainStackView.topAnchor.constraint(equalTo: goalView.topAnchor, constant: 16),
       mainStackView.leadingAnchor.constraint(equalTo: goalView.leadingAnchor, constant: 16),
       mainStackView.trailingAnchor.constraint(equalTo: goalView.trailingAnchor, constant: -16),
-      mainStackView.bottomAnchor.constraint(equalTo: goalView.bottomAnchor, constant: -16),
-      
-      goalInfoStackView.topAnchor.constraint(equalTo: mainStackView.topAnchor),
-      goalInfoStackView.leadingAnchor.constraint(equalTo: mainStackView.leadingAnchor),
-      goalInfoStackView.trailingAnchor.constraint(equalTo: mainStackView.trailingAnchor)
+      mainStackView.bottomAnchor.constraint(equalTo: goalView.bottomAnchor, constant: -16)
     ])
     
     return goalView
