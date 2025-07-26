@@ -3,14 +3,14 @@ import UIKit
 final class GoalViewController: UIViewController, addGoalViewControllerDelegate {
   
   // 스크롤뷰
-  lazy var scView: UIScrollView = {
+  let scView: UIScrollView = {
     let scroll = UIScrollView()
     scroll.backgroundColor = UIColor(hex: "#F7F8FA")
     return scroll
   }()
   
   // 컨텐츠 묶음
-  lazy var goalsStackView: UIStackView = {
+  let goalsStackView: UIStackView = {
     let stack = UIStackView()
     stack.axis = .vertical
     stack.alignment = .fill
@@ -108,6 +108,7 @@ final class GoalViewController: UIViewController, addGoalViewControllerDelegate 
       label.font = commonFontBold
       label.textColor = commonFontColor
       label.text = unit
+      label.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
       return label
     }
     
@@ -117,6 +118,7 @@ final class GoalViewController: UIViewController, addGoalViewControllerDelegate 
       label.font = commonFontBold
       label.textColor = commonFontColor
       label.text = goalName
+      label.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
       return label
     }()
     
@@ -126,6 +128,7 @@ final class GoalViewController: UIViewController, addGoalViewControllerDelegate 
       label.font = commonFontBold
       label.textColor = commonFontColor
       label.text = String(format: "%.2f", targetValue)
+      label.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
       return label
     }()
     
@@ -200,9 +203,17 @@ final class GoalViewController: UIViewController, addGoalViewControllerDelegate 
       return button
     }()
     
+    let spacerView: UIView = {
+      let spacer = UIView()
+      spacer.setContentHuggingPriority(.defaultLow, for: .horizontal)
+      spacer.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+      return spacer
+    }()
+
+    
     // 목표 정보 스택뷰
     let goalInfoStackView: UIStackView = {
-      let stack = UIStackView(arrangedSubviews: [goalNameLabel, goalLabel, unitLabel1, UIView()])
+      let stack = UIStackView(arrangedSubviews: [goalNameLabel, goalLabel, unitLabel1, spacerView])
       stack.axis = .horizontal
       stack.spacing = 8
       stack.alignment = .center
@@ -212,7 +223,7 @@ final class GoalViewController: UIViewController, addGoalViewControllerDelegate 
     
     // 진행 정보 스택뷰
     let progressInfoStackView: UIStackView = {
-      let stack = UIStackView(arrangedSubviews: [weightChangeLabel, untilLabel, goalLeftLabel, unitLabel2, UIView()])
+      let stack = UIStackView(arrangedSubviews: [weightChangeLabel, untilLabel, goalLeftLabel, unitLabel2, spacerView])
       stack.axis = .horizontal
       stack.spacing = 8
       stack.alignment = .center
@@ -255,13 +266,19 @@ final class GoalViewController: UIViewController, addGoalViewControllerDelegate 
     }()
     
     goalView.addSubview(mainStackView)
+    mainStackView.addSubview(goalInfoStackView)
     mainStackView.translatesAutoresizingMaskIntoConstraints = false
+    goalInfoStackView.translatesAutoresizingMaskIntoConstraints = false
     
     NSLayoutConstraint.activate([
       mainStackView.topAnchor.constraint(equalTo: goalView.topAnchor, constant: 16),
       mainStackView.leadingAnchor.constraint(equalTo: goalView.leadingAnchor, constant: 16),
       mainStackView.trailingAnchor.constraint(equalTo: goalView.trailingAnchor, constant: -16),
-      mainStackView.bottomAnchor.constraint(equalTo: goalView.bottomAnchor, constant: -16)
+      mainStackView.bottomAnchor.constraint(equalTo: goalView.bottomAnchor, constant: -16),
+      
+      goalInfoStackView.topAnchor.constraint(equalTo: mainStackView.topAnchor),
+      goalInfoStackView.leadingAnchor.constraint(equalTo: mainStackView.leadingAnchor),
+      goalInfoStackView.trailingAnchor.constraint(equalTo: mainStackView.trailingAnchor)
     ])
     
     return goalView

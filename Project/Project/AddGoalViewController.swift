@@ -13,13 +13,13 @@ final class AddGoalViewController: UIViewController {
   
   
   // 뷰
-  lazy var modalMainView: UIView = {
+  let modalMainView: UIView = {
     let view = UIView()
     return view
   }()
   
   // 목표입력받기
-  lazy var goalTextField: UITextField = {
+  let goalTextField: UITextField = {
     let textField = UITextField()
     applyCommonTextFieldStyle(textField)
     textField.placeholder = "목표를 입력하세요"
@@ -28,7 +28,7 @@ final class AddGoalViewController: UIViewController {
   }()
   
   // 현재
-  lazy var currentTextField: UITextField = {
+  let currentTextField: UITextField = {
     let textField = UITextField()
     applyCommonTextFieldStyle(textField)
     textField.keyboardType = .numberPad
@@ -36,7 +36,7 @@ final class AddGoalViewController: UIViewController {
   }()
   
   // ~에서
-  lazy var formLabel: UILabel = {
+  let formLabel: UILabel = {
     let label = UILabel()
     label.font = commonFontRegular
     label.textColor = commonFontColor
@@ -45,7 +45,7 @@ final class AddGoalViewController: UIViewController {
   }()
   
   // 목적
-  lazy var goalNumberTextField: UITextField = {
+  let goalNumberTextField: UITextField = {
     let textField = UITextField()
     applyCommonTextFieldStyle(textField)
     textField.keyboardType = .numberPad
@@ -53,7 +53,7 @@ final class AddGoalViewController: UIViewController {
   }()
   
   // ~까지
-  lazy var untilLabel: UILabel = {
+  let untilLabel: UILabel = {
     let label = UILabel()
     label.font = commonFontRegular
     label.textColor = commonFontColor
@@ -62,7 +62,7 @@ final class AddGoalViewController: UIViewController {
   }()
   
   // 단위
-  lazy var unitTextField: UITextField = {
+  let unitTextField: UITextField = {
     let textField = UITextField()
     applyCommonTextFieldStyle(textField)
     textField.placeholder = "단위"
@@ -71,7 +71,7 @@ final class AddGoalViewController: UIViewController {
   }()
   
   // 감량 증가 택1
-  lazy var changeType: UISegmentedControl = {
+  let changeType: UISegmentedControl = {
     let segmentControl = UISegmentedControl(items: ["감소", "증가"])
     segmentControl.selectedSegmentIndex = 0
     
@@ -180,6 +180,12 @@ final class AddGoalViewController: UIViewController {
     
     var selectedChangeType: ChangeType {
       return ChangeType(rawValue: changeType.selectedSegmentIndex) ?? .decrease
+    }
+    
+    // 양수만 입력 가능하게
+    if target <= 0 || currentValue <= 0 {
+      showAlert(message: "양수 값으로 입력해 주세요.")
+      return
     }
     
     
